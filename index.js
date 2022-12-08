@@ -1,12 +1,7 @@
 //https://socket.io/get-started/chat
 //http://localhost:3000/
+//Rodar: node index.js
 
-//Tasks
-//Broadcast a message to connected users when someone connects or disconnects.
-//Add support for nicknames.
-//Don’t send the same message to the user that sent it. Instead, append the message directly as soon as he/she presses enter.
-//Show who’s online.
-//Add private messaging.
 
 const express = require('express');
 const app = express();
@@ -20,12 +15,19 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  let userConnected=`user ${socket.id} connected`;
+  console.log(userConnected);  
+  socket.broadcast.emit('chat message', userConnected);  
+
   socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
+    msg=`${socket.id} says: ${msg} connected`;
+    socket.broadcast.emit('chat message', msg);
   });
+
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    let userDiconnected=`user ${socket.id} disconnected`;
+    console.log(userDiconnected);  
+    socket.broadcast.emit('chat message', userDiconnected);      
   });
 });
 
